@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>管理我的公告 | 旅遊獎勵轉讓公告板</title>
+    <link rel="stylesheet" href="/assets/style.css" />
+  </head>
+  <body data-page="my">
+    <header class="topbar">
+      <a class="brand" href="/">旅遊獎勵轉讓公告板</a>
+      <nav class="nav">
+        <a href="/">公告列表</a>
+        <a href="/post.html">我要刊登</a>
+      </nav>
+    </header>
+
+    <main class="shell narrow">
+      <section class="heading-row">
+        <div>
+          <p class="eyebrow">個人公告</p>
+          <h1>管理我的公告</h1>
+        </div>
+      </section>
+
+      <section class="panel">
+        <form id="myLookupForm" class="stack">
+          <label>
+            <span>員工編號</span>
+            <input id="myEmployeeNo" name="employee_no" autocomplete="off" required />
+          </label>
+          <button class="button primary" type="submit">查詢我的公告</button>
+        </form>
+        <div id="myMessage" class="status-message"></div>
+      </section>
+
+      <section id="myListings" class="my-list"></section>
+    </main>
+
+    <script src="/assets/app.js?v=demo-preview-2" defer></script>
+  </body>
+</html>

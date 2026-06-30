@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>初始化資料庫 | 旅遊獎勵轉讓公告板</title>
+    <link rel="stylesheet" href="/assets/style.css" />
+  </head>
+  <body data-page="admin-setup">
+    <header class="topbar">
+      <a class="brand" href="/admin/index.html">管理員後台</a>
+      <nav class="nav">
+        <a href="/admin/index.html">公告管理</a>
+        <a href="/admin/winners.html">得獎名單</a>
+        <button id="logoutButton" class="link-button" type="button">登出</button>
+      </nav>
+    </header>
+
+    <main class="shell narrow">
+      <section class="heading-row">
+        <div>
+          <p class="eyebrow">第一次設定</p>
+          <h1>初始化資料庫</h1>
+        </div>
+      </section>
+
+      <section class="panel">
+        <button id="setupButton" class="button primary" type="button">初始化資料庫</button>
+        <div id="setupMessage" class="status-message"></div>
+      </section>
+    </main>
+
+    <script src="/assets/app.js?v=demo-preview-2" defer></script>
+  </body>
+</html>

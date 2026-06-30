@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>管理員登入 | 旅遊獎勵轉讓公告板</title>
+    <link rel="stylesheet" href="/assets/style.css" />
+  </head>
+  <body data-page="admin-login">
+    <main class="login-shell">
+      <section class="login-panel">
+        <p class="eyebrow">管理員</p>
+        <h1>後台登入</h1>
+        <form id="adminLoginForm" class="stack">
+          <label>
+            <span>帳號</span>
+            <input name="username" autocomplete="username" required />
+          </label>
+          <label>
+            <span>密碼</span>
+            <input name="password" type="password" autocomplete="current-password" required />
+          </label>
+          <button class="button primary" type="submit">登入</button>
+        </form>
+        <div id="loginMessage" class="status-message"></div>
+        <p class="small-link"><a href="/">回公告列表</a></p>
+      </section>
+    </main>
+
+    <script src="/assets/app.js?v=demo-preview-2" defer></script>
+  </body>
+</html>

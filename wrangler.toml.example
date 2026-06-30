@@ -1,0 +1,13 @@
+# wrangler.toml example.
+# Do not put real secrets in this file.
+# database_id is available in the Cloudflare D1 database screen.
+
+name = "travel-reward-board"
+compatibility_date = "2026-06-01"
+pages_build_output_dir = "public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "travel_reward_board"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+

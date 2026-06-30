@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>管理員後台 | 旅遊獎勵轉讓公告板</title>
+    <link rel="stylesheet" href="/assets/style.css" />
+  </head>
+  <body data-page="admin-dashboard">
+    <header class="topbar">
+      <a class="brand" href="/admin/index.html">管理員後台</a>
+      <nav class="nav">
+        <a href="/admin/setup.html">初始化</a>
+        <a href="/admin/winners.html">得獎名單</a>
+        <a href="/">公告列表</a>
+        <button id="logoutButton" class="link-button" type="button">登出</button>
+      </nav>
+    </header>
+
+    <main class="shell wide">
+      <section class="heading-row">
+        <div>
+          <p class="eyebrow">公告管理</p>
+          <h1>管理員後台</h1>
+        </div>
+        <button id="expireOldButton" class="button secondary" type="button">更新過期公告</button>
+      </section>
+
+      <section id="adminMessage" class="status-message"></section>
+
+      <section class="admin-stats" id="adminStats"></section>
+
+      <section class="toolbar" aria-label="管理篩選">
+        <label>
+          <span>狀態</span>
+          <select id="adminStatusFilter">
+            <option value="all">全部</option>
+            <option value="published">刊登中</option>
+            <option value="sold">已售出</option>
+            <option value="closed">已下架</option>
+            <option value="expired">已過期</option>
+          </select>
+        </label>
+        <label>
+          <span>國家</span>
+          <select id="adminCountryFilter">
+            <option value="">全部</option>
+          </select>
+        </label>
+        <label class="grow">
+          <span>搜尋</span>
+          <input id="adminKeywordFilter" type="search" placeholder="姓名、單位、員工編號" autocomplete="off" />
+        </label>
+        <form id="settingsForm" class="inline-form">
+          <label>
+            <span>新公告天數</span>
+            <input name="listing_expire_days" type="number" min="1" max="60" required />
+          </label>
+          <button class="button secondary" type="submit">儲存</button>
+        </form>
+      </section>
+
+      <section class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>狀態</th>
+              <th>員工</th>
+              <th>旅遊</th>
+              <th>售價</th>
+              <th>聯絡方式</th>
+              <th>建立時間</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="adminListingRows"></tbody>
+        </table>
+      </section>
+
+      <section class="panel">
+        <h2>操作紀錄</h2>
+        <div id="auditLogs" class="audit-list"></div>
+      </section>
+    </main>
+
+    <script src="/assets/app.js?v=demo-preview-2" defer></script>
+  </body>
+</html>

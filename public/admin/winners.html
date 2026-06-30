@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>得獎名單 | 旅遊獎勵轉讓公告板</title>
+    <link rel="stylesheet" href="/assets/style.css" />
+  </head>
+  <body data-page="admin-winners">
+    <header class="topbar">
+      <a class="brand" href="/admin/index.html">管理員後台</a>
+      <nav class="nav">
+        <a href="/admin/index.html">公告管理</a>
+        <a href="/admin/setup.html">初始化</a>
+        <button id="logoutButton" class="link-button" type="button">登出</button>
+      </nav>
+    </header>
+
+    <main class="shell narrow">
+      <section class="heading-row">
+        <div>
+          <p class="eyebrow">名單匯入</p>
+          <h1>得獎名單</h1>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div id="winnerStats" class="status-message"></div>
+          <button id="sampleCsvButton" class="button secondary" type="button">下載範例 CSV</button>
+        </div>
+        <form id="winnerImportForm" class="stack">
+          <label>
+            <span>CSV 名單</span>
+            <textarea
+              name="csv"
+              rows="12"
+              spellcheck="false"
+              placeholder="員工編號,姓名,單位,國家&#10;A001,王小明,業務一處,日本"
+              required
+            ></textarea>
+          </label>
+          <button class="button primary" type="submit">匯入</button>
+        </form>
+        <div id="winnerImportMessage" class="status-message"></div>
+      </section>
+    </main>
+
+    <script src="/assets/app.js?v=demo-preview-2" defer></script>
+  </body>
+</html>
