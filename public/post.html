@@ -29,7 +29,11 @@
             <span>員工編號</span>
             <input id="employeeNo" name="employee_no" autocomplete="off" required />
           </label>
-          <button class="button primary" type="submit">查詢得獎資料</button>
+          <label>
+            <span>密碼</span>
+            <input name="employee_password" type="password" inputmode="numeric" autocomplete="current-password" required />
+          </label>
+          <button class="button primary" type="submit">登入並查詢得獎資料</button>
         </form>
         <div id="lookupMessage" class="status-message"></div>
       </section>
@@ -62,6 +66,6 @@
       </section>
     </main>
 
-    <script src="/assets/app.js?v=demo-preview-2" defer></script>
+    <script src="/assets/app.js?v=employee-password-1" defer></script>
   </body>
 </html>

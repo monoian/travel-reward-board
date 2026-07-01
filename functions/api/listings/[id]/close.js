@@ -6,6 +6,7 @@ import {
   nowIso,
   readJson,
   requireDb,
+  requireEmployeePassword,
   validateEmployeeNo,
 } from "../../../_lib/http.js";
 import { assertPublishedListing, audit, expireOldListings } from "../../../_lib/db.js";
@@ -25,6 +26,7 @@ export async function onRequestPost({ request, env, params }) {
     const data = await readJson(request);
     const employeeNo = normalizeEmployeeNo(data.employee_no);
     validateEmployeeNo(employeeNo);
+    requireEmployeePassword(env, data.employee_password);
     await expireOldListings(env);
 
     const listing = await env.DB.prepare(
@@ -56,4 +58,3 @@ export async function onRequestPost({ request, env, params }) {
     return handleError(error);
   }
 }
-

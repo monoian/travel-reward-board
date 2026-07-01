@@ -109,6 +109,21 @@ export function validateEmployeeNo(employeeNo) {
   }
 }
 
+export function requireEmployeePassword(env, value) {
+  const expected = String(env.EMPLOYEE_SHARED_PASSWORD || "");
+  if (!expected) {
+    throw new AppError(
+      500,
+      "EMPLOYEE_PASSWORD_MISSING",
+      "同仁登入密碼尚未設定。請到 Cloudflare Pages 的 Variables and Secrets 新增 EMPLOYEE_SHARED_PASSWORD。"
+    );
+  }
+
+  if (String(value || "") !== expected) {
+    throw new AppError(401, "BAD_EMPLOYEE_PASSWORD", "密碼不正確，請確認後再試。");
+  }
+}
+
 export function validateListingInput(data) {
   const price = parsePrice(data.price);
   const contact = text(data.contact, 80);

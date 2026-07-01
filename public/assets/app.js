@@ -52,6 +52,10 @@ function demoNow(offsetDays = 0) {
   return date.toISOString();
 }
 
+function demoRequireEmployeePassword(value) {
+  if (String(value || "") !== "demo") throw new Error("密碼不正確，請確認後再試。");
+}
+
 function demoSeedListing() {
   const listings = demoReadListings();
   if (listings.length) return listings;
@@ -132,8 +136,20 @@ async function demoApi(path, options = {}) {
     return { ok: true, winner, has_active_listing: Boolean(active), active_listing_id: active?.id || null };
   }
 
+  if (url.pathname === "/api/winner" && method === "POST") {
+    const employeeNo = String(body.employee_no || "").trim().toUpperCase();
+    demoRequireEmployeePassword(body.employee_password);
+    const winner = demoWinners[employeeNo];
+    if (!winner) throw new Error("查無得獎資料，請確認員工編號是否正確。");
+    const active = demoReadListings().find(
+      (listing) => listing.employee_no === employeeNo && listing.status === "published"
+    );
+    return { ok: true, winner, has_active_listing: Boolean(active), active_listing_id: active?.id || null };
+  }
+
   if (url.pathname === "/api/listings" && method === "POST") {
     const employeeNo = String(body.employee_no || "").trim().toUpperCase();
+    demoRequireEmployeePassword(body.employee_password);
     const winner = demoWinners[employeeNo];
     if (!winner) throw new Error("查無得獎資料，請確認員工編號是否正確。");
     const listings = demoReadListings();
@@ -174,9 +190,26 @@ async function demoApi(path, options = {}) {
     return { ok: true, winner, listings };
   }
 
+  if (url.pathname === "/api/my-listings" && method === "POST") {
+    const employeeNo = String(body.employee_no || "").trim().toUpperCase();
+    demoRequireEmployeePassword(body.employee_password);
+    const winner = demoWinners[employeeNo];
+    if (!winner) throw new Error("查無得獎資料，請確認員工編號是否正確。");
+    const listings = demoSeedListing()
+      .filter((listing) => listing.employee_no === employeeNo)
+      .map((listing) => ({
+        ...demoPublicListing(listing),
+        employee_no: employeeNo,
+        status: listing.status,
+        status_label: demoListingStatusLabel(listing.status),
+      }));
+    return { ok: true, winner, listings };
+  }
+
   const ownedAction = url.pathname.match(/^\/api\/listings\/(\d+)\/(update|sold|close|republish)$/);
   if (ownedAction && method === "POST") {
     const employeeNo = String(body.employee_no || "").trim().toUpperCase();
+    demoRequireEmployeePassword(body.employee_password);
     const { listings, listing } = demoFindOwnedListing(ownedAction[1], employeeNo);
     const action = ownedAction[2];
 
@@ -357,16 +390,21 @@ function renderWinner(winner) {
 
 function initPost() {
   let employeeNo = "";
+  let employeePassword = "";
   $("#lookupForm")?.addEventListener("submit", async (event) => {
     event.preventDefault();
     const message = $("#lookupMessage");
     const form = event.currentTarget;
     employeeNo = form.employee_no.value.trim().toUpperCase();
+    employeePassword = form.employee_password.value;
     $("#winnerPanel").classList.add("hidden");
     setMessage(message, "查詢中...");
 
     try {
-      const data = await api(`/api/winner?employee_no=${encodeURIComponent(employeeNo)}`);
+      const data = await api("/api/winner", {
+        method: "POST",
+        body: JSON.stringify({ employee_no: employeeNo, employee_password: employeePassword }),
+      });
       if (data.has_active_listing) {
         setMessage(message, "你目前已有刊登中的公告，請到「管理我的公告」修改或下架。", "warn");
         return;
@@ -382,7 +420,7 @@ function initPost() {
   $("#postForm")?.addEventListener("submit", async (event) => {
     event.preventDefault();
     const message = $("#lookupMessage");
-    const data = { ...formData(event.currentTarget), employee_no: employeeNo };
+    const data = { ...formData(event.currentTarget), employee_no: employeeNo, employee_password: employeePassword };
     setMessage(message, "送出中...");
 
     try {
@@ -398,7 +436,7 @@ function initPost() {
   });
 }
 
-function listingForm(listing, employeeNo) {
+function listingForm(listing, employeeNo, employeePassword) {
   const form = document.createElement("form");
   form.className = "form-grid";
   form.innerHTML = `
@@ -432,10 +470,10 @@ function listingForm(listing, employeeNo) {
     try {
       const result = await api(`/api/listings/${listing.id}/update`, {
         method: "POST",
-        body: JSON.stringify({ ...formData(form), employee_no: employeeNo }),
+        body: JSON.stringify({ ...formData(form), employee_no: employeeNo, employee_password: employeePassword }),
       });
       alert(result.message);
-      loadMyListings(employeeNo);
+      loadMyListings(employeeNo, employeePassword);
     } catch (error) {
       alert(error.message);
     }
@@ -443,7 +481,7 @@ function listingForm(listing, employeeNo) {
   return form;
 }
 
-function myCard(listing, employeeNo) {
+function myCard(listing, employeeNo, employeePassword) {
   const card = document.createElement("article");
   card.className = "my-card";
   card.innerHTML = `
@@ -472,32 +510,32 @@ function myCard(listing, employeeNo) {
   }
 
   if (listing.status === "published") {
-    card.append(listingForm(listing, employeeNo));
+    card.append(listingForm(listing, employeeNo, employeePassword));
     const actions = $(".card-actions", card);
     const sold = document.createElement("button");
     sold.className = "button secondary";
     sold.type = "button";
     sold.textContent = "已售出";
-    sold.addEventListener("click", () => myAction(listing.id, employeeNo, "sold"));
+    sold.addEventListener("click", () => myAction(listing.id, employeeNo, employeePassword, "sold"));
     const close = document.createElement("button");
     close.className = "button danger";
     close.type = "button";
     close.textContent = "不賣了，下架";
-    close.addEventListener("click", () => myAction(listing.id, employeeNo, "close"));
+    close.addEventListener("click", () => myAction(listing.id, employeeNo, employeePassword, "close"));
     actions.append(sold, close);
   } else {
     const republish = document.createElement("button");
     republish.className = "button primary";
     republish.type = "button";
     republish.textContent = "重新刊登";
-    republish.addEventListener("click", () => myAction(listing.id, employeeNo, "republish"));
+    republish.addEventListener("click", () => myAction(listing.id, employeeNo, employeePassword, "republish"));
     $(".card-actions", card).append(republish);
   }
 
   return card;
 }
 
-async function myAction(id, employeeNo, action) {
+async function myAction(id, employeeNo, employeePassword, action) {
   const paths = {
     sold: `/api/listings/${id}/sold`,
     close: `/api/listings/${id}/close`,
@@ -512,28 +550,31 @@ async function myAction(id, employeeNo, action) {
   try {
     const result = await api(paths[action], {
       method: "POST",
-      body: JSON.stringify({ employee_no: employeeNo }),
+      body: JSON.stringify({ employee_no: employeeNo, employee_password: employeePassword }),
     });
     alert(result.message);
-    loadMyListings(employeeNo);
+    loadMyListings(employeeNo, employeePassword);
   } catch (error) {
     alert(error.message);
   }
 }
 
-async function loadMyListings(employeeNo) {
+async function loadMyListings(employeeNo, employeePassword) {
   const list = $("#myListings");
   const message = $("#myMessage");
   list.innerHTML = "";
   setMessage(message, "查詢中...");
   try {
-    const data = await api(`/api/my-listings?employee_no=${encodeURIComponent(employeeNo)}`);
+    const data = await api("/api/my-listings", {
+      method: "POST",
+      body: JSON.stringify({ employee_no: employeeNo, employee_password: employeePassword }),
+    });
     if (!data.listings.length) {
       setMessage(message, "目前沒有公告紀錄。", "warn");
       return;
     }
     setMessage(message, `${data.winner.name}｜${data.winner.unit}｜${data.winner.country}`);
-    data.listings.forEach((listing) => list.append(myCard(listing, employeeNo)));
+    data.listings.forEach((listing) => list.append(myCard(listing, employeeNo, employeePassword)));
   } catch (error) {
     setMessage(message, error.message, "error");
   }
@@ -542,7 +583,8 @@ async function loadMyListings(employeeNo) {
 function initMy() {
   $("#myLookupForm")?.addEventListener("submit", (event) => {
     event.preventDefault();
-    loadMyListings(event.currentTarget.employee_no.value.trim().toUpperCase());
+    const form = event.currentTarget;
+    loadMyListings(form.employee_no.value.trim().toUpperCase(), form.employee_password.value);
   });
 }
 
